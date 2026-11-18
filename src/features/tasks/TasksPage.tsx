@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Check, ChevronDown, Circle, Plus, Search, Trash2 } from 'lucide-react';
 import { db, type Task } from '../../data/database';
+import { useSearchParams } from 'react-router-dom';
 import { filterTasks, getTaskCounts, type TaskFilter } from './taskFilters';
 
 export default function TasksPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<TaskFilter>('all');
   const [query, setQuery] = useState('');
@@ -21,6 +23,7 @@ export default function TasksPage() {
   const counts = useMemo(() => getTaskCounts(tasks), [tasks]);
 
   const resetForm = () => { setTitle(''); setDueAt(''); setPriority('medium'); setEditing(null); setAdding(false); setError(''); };
+  useEffect(() => { if (searchParams.get('new') === '1') { resetForm(); setAdding(true); setSearchParams(current => { current.delete('new'); return current; }, { replace: true }); } }, [searchParams, setSearchParams]);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     const cleanTitle = title.trim();

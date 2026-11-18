@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Archive, Heart, Plus, Search, StickyNote, Tag, Trash2 } from 'lucide-react';
 import { db, type Note } from '../../data/database';
+import { useSearchParams } from 'react-router-dom';
 
 type View = 'all' | 'favorites' | 'archive';
 const noteCategories = ['Persönlich', 'Ideen', 'Familie', 'Arbeit', 'Haushalt', 'Sonstiges'];
 
 export default function NotesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [notes, setNotes] = useState<Note[]>([]);
   const [view, setView] = useState<View>('all');
   const [query, setQuery] = useState('');
@@ -30,6 +32,7 @@ export default function NotesPage() {
   }, [notes, view, query]);
 
   const startNew = () => { setCurrent(null); setIsNew(true); setTitle(''); setContent(''); setCategory('Persönlich'); setTags(''); setError(''); };
+  useEffect(() => { if (searchParams.get('new') === '1') { startNew(); setSearchParams(current => { current.delete('new'); return current; }, { replace: true }); } }, [searchParams, setSearchParams]);
   const open = (note: Note) => { setCurrent(note); setIsNew(false); setTitle(note.title); setContent(note.content); setCategory(note.category); setTags(note.tags.join(', ')); setError(''); };
   const save = async (event: FormEvent) => {
     event.preventDefault();
