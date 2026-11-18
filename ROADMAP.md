@@ -8,8 +8,9 @@
 - [x] Dark/light theme switch and first-run welcome screen
 - [x] PWA manifest/service-worker build integration
 - [x] LIFEHUB app icon and offline shell configuration
-- [ ] Verify clean install, build, and deploy workflow
-- [ ] Add localization catalog and system theme preference (language preference is stored, but UI remains German)
+- [ ] Verify clean install and Pages deployment workflow
+- [x] Follow the operating system theme when the appearance is set to System
+- [ ] Add a localization catalog and apply the stored English preference across the interface
 
 ## Phase 2 — Dashboard and settings (in progress)
 
