@@ -9,8 +9,8 @@ export interface SyncProvider {
   readonly name: string;
   prepare(): Promise<void>;
   authorize(): Promise<void>;
-  listSnapshots(): Promise<SyncSnapshot[]>;
+  listSnapshots(profileId: string): Promise<SyncSnapshot[]>;
   readSnapshot(id: string): Promise<string>;
-  writeSnapshot(deviceId: string, encryptedPayload: string): Promise<void>;
+  writeSnapshot(profileId: string, deviceId: string, encryptedPayload: string): Promise<void>;
   disconnect(): void;
 }

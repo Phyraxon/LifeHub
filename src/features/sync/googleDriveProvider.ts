@@ -99,7 +99,7 @@ export function createGoogleDriveProvider(clientId: string): SyncProvider {
     name: 'Google Drive',
     prepare: () => loadGoogleIdentity(),
     authorize: async () => { await requestToken(clientId); },
-    async listSnapshots(): Promise<SyncSnapshot[]> {
+    async listSnapshots(profileId: string): Promise<SyncSnapshot[]> {
       const bearer = await token();
       const parent = await findFolder(bearer);
       const query = encodeURIComponent(`'${parent}' in parents and trashed=false and name contains '${snapshotPrefix}'`);
@@ -111,7 +111,7 @@ export function createGoogleDriveProvider(clientId: string): SyncProvider {
         files.push(...result.files);
         pageToken = result.nextPageToken ?? '';
       } while (pageToken);
-      return files.filter(file => file.appProperties?.lifehubSync === 'v1' && file.appProperties.deviceId)
+      return files.filter(file => file.appProperties?.lifehubSync === 'v1' && file.appProperties.profileId === profileId && file.appProperties.deviceId)
         .map(file => ({ id: file.id, deviceId: file.appProperties!.deviceId, name: file.name }));
     },
     async readSnapshot(id: string): Promise<string> {
@@ -120,15 +120,15 @@ export function createGoogleDriveProvider(clientId: string): SyncProvider {
       if (!response.ok) throw new Error(`Die LIFEHUB-Sicherung in Google Drive konnte nicht geladen werden (${response.status}).`);
       return await response.text();
     },
-    async writeSnapshot(deviceId: string, encryptedPayload: string): Promise<void> {
+    async writeSnapshot(profileId: string, deviceId: string, encryptedPayload: string): Promise<void> {
       const bearer = await token();
       const parent = await findFolder(bearer);
-      const name = `${snapshotPrefix}${deviceId}.json`;
+      const name = `${snapshotPrefix}${profileId}-${deviceId}.json`;
       const query = encodeURIComponent(`'${parent}' in parents and name='${name}' and trashed=false`);
       const found = await driveRequest<{ files: DriveFile[] }>(bearer, `${driveApi}/files?q=${query}&fields=files(id,name)&pageSize=10`);
       let id = found.files[0]?.id;
       if (!id) {
-        const created = await driveRequest<DriveFile>(bearer, `${driveApi}/files?fields=id,name`, { method: 'POST', body: JSON.stringify({ name, mimeType: snapshotMimeType, parents: [parent], appProperties: { lifehubSync: 'v1', deviceId } }) });
+        const created = await driveRequest<DriveFile>(bearer, `${driveApi}/files?fields=id,name`, { method: 'POST', body: JSON.stringify({ name, mimeType: snapshotMimeType, parents: [parent], appProperties: { lifehubSync: 'v1', profileId, deviceId } }) });
         id = created.id;
       }
       await uploadSnapshot(bearer, id, encryptedPayload);

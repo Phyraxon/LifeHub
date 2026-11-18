@@ -163,8 +163,8 @@ class LifehubDatabase extends Dexie {
   attachments!: EntityTable<RecordBase, 'id'>;
   syncTombstones!: EntityTable<SyncTombstone, 'id'>;
 
-  constructor() {
-    super('LifehubDatabase');
+  constructor(name = 'LifehubDatabase') {
+    super(name);
     this.version(1).stores({
       settings: '&key, updatedAt',
       tasks: 'id, title, dueAt, completedAt, priority, createdAt, updatedAt',
@@ -187,7 +187,50 @@ class LifehubDatabase extends Dexie {
   }
 }
 
-export const db = new LifehubDatabase();
+const databases = new Map<string, LifehubDatabase>();
+const legacyDatabaseKey = '__legacy__';
+let activeProfileId: string | null = null;
+
+function namedDatabase(key: string): LifehubDatabase {
+  let instance = databases.get(key);
+  if (!instance) {
+    instance = new LifehubDatabase(key === legacyDatabaseKey ? 'LifehubDatabase' : `LifehubDatabase-${key}`);
+    databases.set(key, instance);
+  }
+  return instance;
+}
+
+export function setActiveProfileDatabase(profileId: string): void { activeProfileId = profileId; }
+export function clearActiveProfileDatabase(): void { activeProfileId = null; }
+export function getActiveProfileDatabaseId(): string | null { return activeProfileId; }
+
+export async function migrateLegacyDatabaseToProfile(profileId: string): Promise<void> {
+  if (localStorage.getItem('lifehub-legacy-database-owner')) return;
+  const legacy = namedDatabase(legacyDatabaseKey);
+  const destination = namedDatabase(profileId);
+  await Promise.all([legacy.open(), destination.open()]);
+  await destination.transaction('rw', destination.tables, async () => {
+    for (const legacyTable of legacy.tables) {
+      const records = await legacy.table(legacyTable.name).toArray();
+      if (!records.length) continue;
+      const destinationTable = destination.table(legacyTable.name);
+      if (await destinationTable.count() === 0) await destinationTable.bulkPut(records as never[]);
+    }
+  });
+  localStorage.setItem('lifehub-legacy-database-owner', profileId);
+}
+
+export const db = new Proxy({} as LifehubDatabase, {
+  get(_target, property) {
+    const instance = namedDatabase(activeProfileId ?? legacyDatabaseKey);
+    const value = Reflect.get(instance, property, instance) as unknown;
+    return typeof value === 'function' ? value.bind(instance) : value;
+  },
+  set(_target, property, value) {
+    const instance = namedDatabase(activeProfileId ?? legacyDatabaseKey);
+    return Reflect.set(instance, property, value, instance);
+  },
+});
 
 export const defaultSettings: AppSettings = {
   key: 'app', id: 'app', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),

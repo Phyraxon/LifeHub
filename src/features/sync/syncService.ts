@@ -2,9 +2,8 @@ import { db } from '../../data/database';
 import { createBackupJson, encryptBackup, parseBackup, tableNames, type ImportPlan } from '../backup/backupService';
 import type { SyncProvider } from './SyncProvider';
 
-const deviceKey = 'lifehub-sync-device-id';
-
-export function getSyncDeviceId(): string {
+export function getSyncDeviceId(profileId: string): string {
+  const deviceKey = `lifehub-sync-device-id:${profileId}`;
   let id = localStorage.getItem(deviceKey);
   if (!id) { id = crypto.randomUUID(); localStorage.setItem(deviceKey, id); }
   return id;
@@ -80,15 +79,15 @@ export interface SyncResult {
   syncedAt: string;
 }
 
-export async function synchronize(provider: SyncProvider, passphrase: string): Promise<SyncResult> {
+export async function synchronize(provider: SyncProvider, passphrase: string, profileId: string): Promise<SyncResult> {
   if (passphrase.trim().length < 12) throw new Error('Dein Sync-Passwort muss mindestens 12 Zeichen lang sein.');
   const localPlan = await parseBackup(await createBackupJson());
-  const snapshots = await provider.listSnapshots();
+  const snapshots = await provider.listSnapshots(profileId);
   const plans = [localPlan];
   for (const snapshot of snapshots) plans.push(await parseBackup(await provider.readSnapshot(snapshot.id), passphrase));
   const merged = await mergeSyncPlans(plans);
   await restoreMergedPlan(merged);
   const encrypted = await encryptBackup(await createBackupJson(), passphrase);
-  await provider.writeSnapshot(getSyncDeviceId(), encrypted);
+  await provider.writeSnapshot(profileId, getSyncDeviceId(profileId), encrypted);
   return { snapshotsMerged: snapshots.length, recordsAvailable: merged.total, syncedAt: new Date().toISOString() };
 }
