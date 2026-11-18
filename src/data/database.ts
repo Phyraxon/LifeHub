@@ -99,6 +99,32 @@ export interface StoredDocument extends RecordBase {
   blob: Blob;
 }
 
+export interface Contract extends RecordBase {
+  name: string;
+  provider: string;
+  costCents: number;
+  billingCycle: 'monthly' | 'yearly';
+  startedAt: string;
+  endsAt: string | null;
+  renewalAt: string | null;
+  noticeDays: number;
+  documentId: string | null;
+  notes: string;
+}
+
+export interface Device extends RecordBase {
+  name: string;
+  manufacturer: string;
+  purchaseDate: string | null;
+  priceCents: number | null;
+  retailer: string;
+  serialNumber: string;
+  warrantyMonths: number;
+  warrantyEndAt: string | null;
+  documentId: string | null;
+  notes: string;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -111,9 +137,9 @@ class LifehubDatabase extends Dexie {
   shoppingLists!: EntityTable<ShoppingList, 'id'>;
   shoppingItems!: EntityTable<ShoppingItem, 'id'>;
   documents!: EntityTable<StoredDocument, 'id'>;
-  contracts!: EntityTable<RecordBase, 'id'>;
+  contracts!: EntityTable<Contract, 'id'>;
   subscriptions!: EntityTable<RecordBase, 'id'>;
-  devices!: EntityTable<RecordBase, 'id'>;
+  devices!: EntityTable<Device, 'id'>;
   notes!: EntityTable<RecordBase, 'id'>;
   categories!: EntityTable<RecordBase, 'id'>;
   tags!: EntityTable<RecordBase, 'id'>;
@@ -138,6 +164,7 @@ class LifehubDatabase extends Dexie {
     this.version(4).stores({ householdTasks: 'id, roomId, dueAt, completedAt, recurrence, createdAt, updatedAt', rooms: 'id, name, createdAt, updatedAt' });
     this.version(5).stores({ transactions: 'id, date, kind, category, createdAt, updatedAt', budgets: 'id, month, createdAt, updatedAt', savingsGoals: 'id, title, dueAt, createdAt, updatedAt' });
     this.version(6).stores({ documents: 'id, name, category, issuedAt, expiresAt, createdAt, updatedAt' });
+    this.version(7).stores({ contracts: 'id, provider, renewalAt, endsAt, createdAt, updatedAt', devices: 'id, name, purchaseDate, warrantyEndAt, createdAt, updatedAt' });
   }
 }
 
