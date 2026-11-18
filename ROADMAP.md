@@ -44,6 +44,14 @@ The first Dexie schema now defines settings and the requested module stores. Nex
 
 Deliver finance, documents/contracts/devices, then notes, unified search, and reminders. Each module must have complete create/read/update/delete flows and useful empty states before being linked as active.
 
+### Phase 6 — Finances (in progress)
+
+- [x] Record income and expenses with date and category
+- [x] Monthly balance and category totals using integer cents
+- [x] Monthly budget with remaining/over-budget calculation
+- [x] Savings goals with contributions
+- [ ] Recurring transactions, dedicated budget categories, month comparison, and chart coverage
+
 ## Phase 9 — Backup
 
 Implement validated versioned JSON export/import, duplicate reporting, safe restore, encrypted backup via AES-GCM/PBKDF2, and storage usage reporting.
@@ -54,4 +62,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, and household slices. LIFEHUB 1.0 is not complete: finance, document/contract/device, notes/search/reminders, backup, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, and basic finance slices. LIFEHUB 1.0 is not complete: recurring finance, document/contract/device, notes/search/reminders, backup, and release verification remain on the roadmap.

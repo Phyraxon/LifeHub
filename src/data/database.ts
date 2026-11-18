@@ -65,15 +65,35 @@ export interface HouseholdTask extends RecordBase {
   notes: string;
 }
 
+export interface TransactionRecord extends RecordBase {
+  title: string;
+  date: string;
+  kind: 'income' | 'expense';
+  category: string;
+  amountCents: number;
+}
+
+export interface Budget extends RecordBase {
+  month: string;
+  amountCents: number;
+}
+
+export interface SavingsGoal extends RecordBase {
+  title: string;
+  targetCents: number;
+  savedCents: number;
+  dueAt: string | null;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
   events!: EntityTable<CalendarEvent, 'id'>;
   householdTasks!: EntityTable<HouseholdTask, 'id'>;
   rooms!: EntityTable<Room, 'id'>;
-  transactions!: EntityTable<RecordBase, 'id'>;
-  budgets!: EntityTable<RecordBase, 'id'>;
-  savingsGoals!: EntityTable<RecordBase, 'id'>;
+  transactions!: EntityTable<TransactionRecord, 'id'>;
+  budgets!: EntityTable<Budget, 'id'>;
+  savingsGoals!: EntityTable<SavingsGoal, 'id'>;
   shoppingLists!: EntityTable<ShoppingList, 'id'>;
   shoppingItems!: EntityTable<ShoppingItem, 'id'>;
   documents!: EntityTable<RecordBase, 'id'>;
@@ -102,6 +122,7 @@ class LifehubDatabase extends Dexie {
     this.version(2).stores({ events: 'id, startAt, createdAt, updatedAt' });
     this.version(3).stores({ shoppingLists: 'id, name, createdAt, updatedAt', shoppingItems: 'id, listId, checkedAt, category, createdAt, updatedAt' });
     this.version(4).stores({ householdTasks: 'id, roomId, dueAt, completedAt, recurrence, createdAt, updatedAt', rooms: 'id, name, createdAt, updatedAt' });
+    this.version(5).stores({ transactions: 'id, date, kind, category, createdAt, updatedAt', budgets: 'id, month, createdAt, updatedAt', savingsGoals: 'id, title, dueAt, createdAt, updatedAt' });
   }
 }
 
