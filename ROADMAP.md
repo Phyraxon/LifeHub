@@ -38,7 +38,7 @@ The first Dexie schema now defines settings and the requested module stores. Nex
 - [x] Accurate line-rounded totals and remaining open subtotal
 - [x] Household rooms and chores with due dates, notes, one-time/daily/weekly/monthly recurrence
 - [x] Completing recurring chores advances their next due date, including month-end handling
-- [ ] Household maintenance reminders and shopping history/favorites view
+- [x] Household task reminders appear in the reminder center; shopping history/favorites view remains open
 
 ## Phases 6–8 — Daily life modules
 
@@ -58,14 +58,17 @@ Deliver finance, documents/contracts/devices, then notes, unified search, and re
 - [x] 20 MB file limit, accepted-format checks, and browser quota check before writes
 - [x] Contract/subscription costs, billing cycles, renewal dates, and notice date calculations
 - [x] Device purchase/serial/warranty records with calculated warranty end and document links
-- [ ] Reminder generation, device photos, and storage cleanup tooling
+- [x] Reminder generation for contract notice dates, device warranties, and expiring documents
+- [ ] Device photos and storage cleanup tooling
 
 ### Phase 8 — Notes, search, and reminders (in progress)
 
 - [x] Notes with categories, tags, favorites, archive, search, and editing
 - [x] Global keyboard search across tasks, events, documents, contracts, devices, notes, and shopping items
 - [x] Search history stored locally; document blobs scanned without retaining the full file list in memory
-- [ ] Checklists, cross-module links, reminder generation, browser notification settings, and reminder tests
+- [x] Reminder center for due tasks, calendar events, household chores, contracts, warranties, and expiring documents
+- [x] Reminder generation unit tests
+- [ ] Checklists, cross-module links, and browser notification settings
 
 ## Phase 9 — Backup (in progress)
 
@@ -82,4 +85,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, device, notes, global-search, and initial backup slices. LIFEHUB 1.0 is not complete: reminders, additional backup version support, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, device, notes, global-search, reminders, and initial backup slices. LIFEHUB 1.0 is not complete: additional backup compatibility and release verification remain on the roadmap.

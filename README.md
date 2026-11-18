@@ -2,7 +2,7 @@
 
 **Your life. One place.** A private, local-first personal life management platform.
 
-> Current status: early foundation. Local task/calendar/shopping/household/finance/document/contract/device workflows, notes, search, and initial JSON/encrypted backup flows are present; reminders and extended backup compatibility remain in progress.
+> Current status: local-first workflows are available for tasks, calendar, shopping, household, finance, documents, contracts, devices, notes, global search, reminders, and versioned JSON/encrypted backup. LIFEHUB 1.0 still needs release verification and additional compatibility work.
 
 ## Run locally
 
