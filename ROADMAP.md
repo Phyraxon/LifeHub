@@ -31,9 +31,16 @@ The first Dexie schema now defines settings and the requested module stores. Nex
 - [x] Basic ICS import/export with date/text conversion unit tests
 - [ ] Recurring events, reminders, task links, duplicate-aware ICS import, and run verification
 
-## Phases 5–8 — Daily life modules
+## Phase 5 — Haushalt und Einkauf (in progress)
 
-Deliver calendar and tasks, household and shopping, finance, documents/contracts/devices, then notes, unified search, and reminders. Each module must have complete create/read/update/delete flows and useful empty states before being linked as active.
+- [x] Multiple shopping lists persisted locally
+- [x] Products with quantity, unit, category, price, completion, and favorite state
+- [x] Accurate line-rounded totals and remaining open subtotal
+- [ ] Household rooms, recurring chores, maintenance reminders, and shopping history/favorites view
+
+## Phases 6–8 — Daily life modules
+
+Deliver finance, documents/contracts/devices, then notes, unified search, and reminders. Each module must have complete create/read/update/delete flows and useful empty states before being linked as active.
 
 ## Phase 9 — Backup
 
@@ -45,4 +52,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and first functional task and calendar slices. LIFEHUB 1.0 is not complete: most module workflows, recurring events/reminders, backup, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, and shopping slices. LIFEHUB 1.0 is not complete: household, finance, document/contract/device, notes/search/reminders, backup, and release verification remain on the roadmap.

@@ -32,6 +32,23 @@ export interface CalendarEvent extends RecordBase {
   notes: string;
 }
 
+export interface ShoppingList extends RecordBase {
+  name: string;
+}
+
+export type ShoppingCategory = 'Lebensmittel' | 'Getränke' | 'Drogerie' | 'Haushalt' | 'Technik' | 'Kleidung' | 'Sonstiges';
+
+export interface ShoppingItem extends RecordBase {
+  listId: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  category: ShoppingCategory;
+  price: number | null;
+  checkedAt: string | null;
+  favorite: boolean;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -41,8 +58,8 @@ class LifehubDatabase extends Dexie {
   transactions!: EntityTable<RecordBase, 'id'>;
   budgets!: EntityTable<RecordBase, 'id'>;
   savingsGoals!: EntityTable<RecordBase, 'id'>;
-  shoppingLists!: EntityTable<RecordBase, 'id'>;
-  shoppingItems!: EntityTable<RecordBase, 'id'>;
+  shoppingLists!: EntityTable<ShoppingList, 'id'>;
+  shoppingItems!: EntityTable<ShoppingItem, 'id'>;
   documents!: EntityTable<RecordBase, 'id'>;
   contracts!: EntityTable<RecordBase, 'id'>;
   subscriptions!: EntityTable<RecordBase, 'id'>;
@@ -67,6 +84,7 @@ class LifehubDatabase extends Dexie {
       tags: 'id, createdAt, updatedAt', reminders: 'id, createdAt, updatedAt', attachments: 'id, createdAt, updatedAt',
     });
     this.version(2).stores({ events: 'id, startAt, createdAt, updatedAt' });
+    this.version(3).stores({ shoppingLists: 'id, name, createdAt, updatedAt', shoppingItems: 'id, listId, checkedAt, category, createdAt, updatedAt' });
   }
 }
 
