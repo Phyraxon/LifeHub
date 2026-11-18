@@ -220,6 +220,26 @@ export async function migrateLegacyDatabaseToProfile(profileId: string): Promise
   localStorage.setItem('lifehub-legacy-database-owner', profileId);
 }
 
+export async function migratePreviousProfileToGoogleAccount(email: string, googleProfileId: string): Promise<void> {
+  const migrationKey = `lifehub-google-profile-migrated:${googleProfileId}`;
+  if (localStorage.getItem(migrationKey)) return;
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email.trim().toLowerCase())));
+  const previousId = [...digest].slice(0, 16).map(value => value.toString(16).padStart(2, '0')).join('');
+  if (previousId === googleProfileId) return;
+  const source = namedDatabase(previousId);
+  const destination = namedDatabase(googleProfileId);
+  await Promise.all([source.open(), destination.open()]);
+  await destination.transaction('rw', destination.tables, async () => {
+    for (const sourceTable of source.tables) {
+      const destinationTable = destination.table(sourceTable.name);
+      if (await destinationTable.count() !== 0) continue;
+      const records = await source.table(sourceTable.name).toArray();
+      if (records.length) await destinationTable.bulkPut(records as never[]);
+    }
+  });
+  localStorage.setItem(migrationKey, 'done');
+}
+
 export const db = new Proxy({} as LifehubDatabase, {
   get(_target, property) {
     const instance = namedDatabase(activeProfileId ?? legacyDatabaseKey);

@@ -22,7 +22,7 @@ export default function SyncPage() {
   const [result, setResult] = useState<SyncResult | null>(null);
   const [connected, setConnected] = useState(false);
 
-  const googleProvider = useMemo(() => googleClientId ? createGoogleDriveProvider(googleClientId) : null, []);
+  const googleProvider = useMemo(() => googleClientId ? createGoogleDriveProvider(googleClientId, user.id) : null, [user.id]);
 
   useEffect(() => {
     if (!googleProvider) return;

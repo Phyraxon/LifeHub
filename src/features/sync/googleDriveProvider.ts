@@ -2,7 +2,7 @@ import type { SyncProvider, SyncSnapshot } from './SyncProvider';
 
 const driveApi = 'https://www.googleapis.com/drive/v3';
 const uploadApi = 'https://www.googleapis.com/upload/drive/v3';
-const scope = 'https://www.googleapis.com/auth/drive.file';
+const scope = 'openid email profile https://www.googleapis.com/auth/drive.file';
 const folderMimeType = 'application/vnd.google-apps.folder';
 const snapshotMimeType = 'application/vnd.lifehub.encrypted-sync+json';
 const snapshotPrefix = 'lifehub-sync-';
@@ -20,6 +20,10 @@ declare global {
 let libraryPromise: Promise<void> | undefined;
 let accessToken: string | undefined;
 let tokenExpiresAt = 0;
+export function signOutGoogle(): void {
+  if (accessToken && window.google?.accounts.oauth2) window.google.accounts.oauth2.revoke(accessToken);
+  accessToken = undefined; tokenExpiresAt = 0;
+}
 
 function loadGoogleIdentity(): Promise<void> {
   if (window.google?.accounts.oauth2) return Promise.resolve();
@@ -67,6 +71,23 @@ async function requestToken(clientId: string): Promise<string> {
   });
 }
 
+export interface GoogleIdentity { id: string; email: string; name: string; }
+export async function signInWithGoogle(clientId: string): Promise<GoogleIdentity> {
+  const bearer = await requestToken(clientId);
+  const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: `Bearer ${bearer}` } });
+  if (!response.ok) throw new Error('Google konnte dein Konto nicht bestätigen. Bitte melde dich erneut an.');
+  const profile = await response.json() as { sub?: string; email?: string; name?: string; email_verified?: boolean };
+  if (!profile.sub || !profile.email || profile.email_verified !== true) throw new Error('Google hat keine bestätigte E-Mail-Adresse zurückgegeben.');
+  return { id: profile.sub, email: profile.email, name: profile.name || profile.email.split('@')[0] };
+}
+
+async function verifyGoogleSubject(bearer: string, expectedSubject: string): Promise<void> {
+  const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: `Bearer ${bearer}` } });
+  if (!response.ok) throw new Error('Google-Anmeldung abgelaufen. Bitte verbinde dein Google-Konto erneut.');
+  const profile = await response.json() as { sub?: string };
+  if (profile.sub !== expectedSubject) throw new Error('Das ausgewählte Google-Konto stimmt nicht mit deinem LIFEHUB-Benutzer überein.');
+}
+
 async function driveRequest<T>(token: string, url: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(url, { ...init, headers: { Authorization: `Bearer ${token}`, ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...init.headers } });
   if (!response.ok) {
@@ -78,7 +99,7 @@ async function driveRequest<T>(token: string, url: string, init: RequestInit = {
   return await response.json() as T;
 }
 
-export function createGoogleDriveProvider(clientId: string): SyncProvider {
+export function createGoogleDriveProvider(clientId: string, expectedSubject?: string): SyncProvider {
   let folderId: string | undefined;
   const token = () => requestToken(clientId);
 
@@ -98,9 +119,10 @@ export function createGoogleDriveProvider(clientId: string): SyncProvider {
     id: 'google-drive',
     name: 'Google Drive',
     prepare: () => loadGoogleIdentity(),
-    authorize: async () => { await requestToken(clientId); },
+    authorize: async () => { const bearer = await requestToken(clientId); if (expectedSubject) await verifyGoogleSubject(bearer, expectedSubject); },
     async listSnapshots(profileId: string): Promise<SyncSnapshot[]> {
       const bearer = await token();
+      if (expectedSubject) await verifyGoogleSubject(bearer, expectedSubject);
       const parent = await findFolder(bearer);
       const query = encodeURIComponent(`'${parent}' in parents and trashed=false and name contains '${snapshotPrefix}'`);
       let pageToken = '';
@@ -116,12 +138,14 @@ export function createGoogleDriveProvider(clientId: string): SyncProvider {
     },
     async readSnapshot(id: string): Promise<string> {
       const bearer = await token();
+      if (expectedSubject) await verifyGoogleSubject(bearer, expectedSubject);
       const response = await fetch(`${driveApi}/files/${encodeURIComponent(id)}?alt=media`, { headers: { Authorization: `Bearer ${bearer}` } });
       if (!response.ok) throw new Error(`Die LIFEHUB-Sicherung in Google Drive konnte nicht geladen werden (${response.status}).`);
       return await response.text();
     },
     async writeSnapshot(profileId: string, deviceId: string, encryptedPayload: string): Promise<void> {
       const bearer = await token();
+      if (expectedSubject) await verifyGoogleSubject(bearer, expectedSubject);
       const parent = await findFolder(bearer);
       const name = `${snapshotPrefix}${profileId}-${deviceId}.json`;
       const query = encodeURIComponent(`'${parent}' in parents and name='${name}' and trashed=false`);
@@ -134,8 +158,7 @@ export function createGoogleDriveProvider(clientId: string): SyncProvider {
       await uploadSnapshot(bearer, id, encryptedPayload);
     },
     disconnect() {
-      if (accessToken && window.google?.accounts.oauth2) window.google.accounts.oauth2.revoke(accessToken);
-      accessToken = undefined; tokenExpiresAt = 0; folderId = undefined;
+      signOutGoogle(); folderId = undefined;
     },
   };
 }
