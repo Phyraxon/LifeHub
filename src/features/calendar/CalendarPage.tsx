@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, Download, Plus, Upload, X } from 'lucide-react';
 import { db, type CalendarEvent } from '../../data/database';
+import { useSearchParams } from 'react-router-dom';
 import { exportIcs, importIcs } from './ics';
 
 type View = 'day' | 'week' | 'month' | 'agenda';
@@ -11,6 +12,7 @@ const eventDay = (event: CalendarEvent) => event.allDay ? event.startAt : keyOf(
 const startOfWeek = (date: Date) => { const result = new Date(date.getFullYear(), date.getMonth(), date.getDate()); result.setDate(result.getDate() - ((result.getDay() + 6) % 7)); return result; };
 
 export default function CalendarPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [cursor, setCursor] = useState(() => new Date());
   const [selectedDay, setSelectedDay] = useState(() => keyOf(new Date()));
@@ -41,6 +43,8 @@ export default function CalendarPage() {
   const agendaEvents = useMemo(() => events.filter(event => eventDay(event) >= keyOf(new Date()) && eventDay(event) <= keyOf(new Date(Date.now() + 60 * 86400000))), [events]);
 
   const openNew = (day = selectedDay) => { setEditingId(null); setTitle(''); setDate(day); setStartTime('09:00'); setEndTime('10:00'); setAllDay(false); setCategory('Persönlich'); setColor('#9b7bef'); setNotes(''); setError(''); setEditor(true); };
+  useEffect(() => { if (searchParams.get('new') === '1') { openNew(); setSearchParams(current => { current.delete('new'); return current; }, { replace: true }); } }, [searchParams, setSearchParams]);
+
   const openEdit = (event: CalendarEvent) => { setEditingId(event.id); setTitle(event.title); setDate(event.allDay ? event.startAt : keyOf(new Date(event.startAt))); setStartTime(event.allDay ? '09:00' : toLocalInput(event.startAt).slice(11)); setEndTime(event.allDay ? '10:00' : toLocalInput(event.endAt).slice(11)); setAllDay(event.allDay); setCategory(event.category); setColor(event.color); setNotes(event.notes); setError(''); setEditor(true); };
 
   const submit = async (e: FormEvent) => {
