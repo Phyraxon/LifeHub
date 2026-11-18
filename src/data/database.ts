@@ -125,6 +125,15 @@ export interface Device extends RecordBase {
   notes: string;
 }
 
+export interface Note extends RecordBase {
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  favorite: boolean;
+  archived: boolean;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -140,7 +149,7 @@ class LifehubDatabase extends Dexie {
   contracts!: EntityTable<Contract, 'id'>;
   subscriptions!: EntityTable<RecordBase, 'id'>;
   devices!: EntityTable<Device, 'id'>;
-  notes!: EntityTable<RecordBase, 'id'>;
+  notes!: EntityTable<Note, 'id'>;
   categories!: EntityTable<RecordBase, 'id'>;
   tags!: EntityTable<RecordBase, 'id'>;
   reminders!: EntityTable<RecordBase, 'id'>;
@@ -165,6 +174,7 @@ class LifehubDatabase extends Dexie {
     this.version(5).stores({ transactions: 'id, date, kind, category, createdAt, updatedAt', budgets: 'id, month, createdAt, updatedAt', savingsGoals: 'id, title, dueAt, createdAt, updatedAt' });
     this.version(6).stores({ documents: 'id, name, category, issuedAt, expiresAt, createdAt, updatedAt' });
     this.version(7).stores({ contracts: 'id, provider, renewalAt, endsAt, createdAt, updatedAt', devices: 'id, name, purchaseDate, warrantyEndAt, createdAt, updatedAt' });
+    this.version(8).stores({ notes: 'id, title, category, favorite, archived, createdAt, updatedAt' });
   }
 }
 

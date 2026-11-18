@@ -60,6 +60,13 @@ Deliver finance, documents/contracts/devices, then notes, unified search, and re
 - [x] Device purchase/serial/warranty records with calculated warranty end and document links
 - [ ] Reminder generation, device photos, and storage cleanup tooling
 
+### Phase 8 — Notes, search, and reminders (in progress)
+
+- [x] Notes with categories, tags, favorites, archive, search, and editing
+- [x] Global keyboard search across tasks, events, documents, contracts, devices, notes, and shopping items
+- [x] Search history stored locally; document blobs scanned without retaining the full file list in memory
+- [ ] Checklists, cross-module links, reminder generation, browser notification settings, and reminder tests
+
 ## Phase 9 — Backup
 
 Implement validated versioned JSON export/import, duplicate reporting, safe restore, encrypted backup via AES-GCM/PBKDF2, and storage usage reporting.
@@ -70,4 +77,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, and device slices. LIFEHUB 1.0 is not complete: recurring finance, reminders, notes/search, backup, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, device, notes, and global-search slices. LIFEHUB 1.0 is not complete: reminders, backup, and release verification remain on the roadmap.
