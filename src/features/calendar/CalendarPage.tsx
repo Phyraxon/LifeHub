@@ -3,6 +3,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, Download, Plus, Upload, X } fr
 import { db, type CalendarEvent } from '../../data/database';
 import { useSearchParams } from 'react-router-dom';
 import { exportIcs, importIcs } from './ics';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 type View = 'day' | 'week' | 'month' | 'agenda';
 const keyOf = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -63,7 +64,7 @@ export default function CalendarPage() {
     setSelectedDay(date); await refresh(); setEditor(false);
   };
 
-  const removeEvent = async (id: string) => { await db.events.delete(id); await refresh(); };
+  const removeEvent = async (id: string) => { await deleteSyncedRecords([{ table: 'events', ids: [id] }]); await refresh(); };
   const changeCursor = (amount: number) => {
     const next = new Date(cursor);
     if (view === 'day') next.setDate(next.getDate() + amount);

@@ -84,6 +84,10 @@ Deliver finance, documents/contracts/devices, then notes, unified search, and re
 
 Add focused unit/integration and Playwright coverage, verify responsive behavior, offline app shell, subpath builds, keyboard access, and GitHub Pages deployment. Document limitations and browser storage behavior.
 
+- [x] Optional client-side encrypted snapshot sync adapters for Google Drive and WebDAV/Nextcloud
+- [x] Per-device merge and deletion tombstones
+- [ ] Configure and verify the public Google OAuth client; validate sync between real devices
+
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, device, notes, global-search, reminders, and initial backup slices. LIFEHUB 1.0 is not complete: additional backup compatibility and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, functional task, calendar, shopping, household, finance, document, contract, device, notes, global-search, reminders, initial backup, and optional cloud sync slices. Google OAuth configuration, multi-device sync verification, additional backup compatibility, and release verification remain on the roadmap.

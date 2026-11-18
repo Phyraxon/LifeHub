@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Check, Circle, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { db, type HouseholdRecurrence, type HouseholdTask, type Room } from '../../data/database';
 import { advanceDueDate } from './recurrence';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 type Filter = 'open' | 'done';
 const dateKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -73,9 +74,9 @@ export default function HouseholdPage() {
   };
   const removeRoom = async (room: Room) => {
     if (await db.householdTasks.where('roomId').equals(room.id).count()) { setError(`„${room.name}“ hat noch verknüpfte Aufgaben. Weise sie zuerst einem anderen Raum zu.`); return; }
-    await db.rooms.delete(room.id); await refresh();
+    await deleteSyncedRecords([{ table: 'rooms', ids: [room.id] }]); await refresh();
   };
-  const removeTask = async (id: string) => { await db.householdTasks.delete(id); await refresh(); };
+  const removeTask = async (id: string) => { await deleteSyncedRecords([{ table: 'householdTasks', ids: [id] }]); await refresh(); };
   const roomName = (id: string | null) => id ? rooms.find(room => room.id === id)?.name ?? 'Raum entfernt' : 'Kein Raum';
 
   return <section className="household-page">

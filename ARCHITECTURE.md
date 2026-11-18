@@ -2,7 +2,7 @@
 
 ## Product and runtime
 
-LIFEHUB is a client-only React application. Vite builds static assets for GitHub Pages. Hash-based routing keeps deep links working on static hosting. User data belongs in browser storage; no server, account, analytics, or remote API is required.
+LIFEHUB is a client-only React application. Vite builds static assets for GitHub Pages. Hash-based routing keeps deep links working on static hosting. Local use needs no account or backend. Optional provider integrations can sync encrypted snapshots directly from the browser to the user's Google Drive or WebDAV server.
 
 ## Layers
 
@@ -17,7 +17,7 @@ The initial shell is in `src/App.tsx`; feature routes live under `src/features`.
 
 ## Storage and privacy
 
-Dexie/IndexedDB is the durable store. Settings and transient UI preferences may use localStorage. Document blobs are stored with metadata in IndexedDB and checked against a 20 MB limit and available browser quota before writes. Backup import validates format/version with Zod, detects IDs already present, and commits new rows transactionally without overwriting. Encrypted exports use Web Crypto AES-GCM with a PBKDF2-SHA-256-derived key; this protects the export file only, not the live browser database.
+Dexie/IndexedDB is the durable store. Settings and transient UI preferences may use localStorage. Document blobs are stored with metadata in IndexedDB and checked against a 20 MB limit and available browser quota before writes. Backup import validates format/version with Zod, detects IDs already present, and commits new rows transactionally without overwriting. Encrypted exports and provider sync use Web Crypto AES-GCM with a PBKDF2-SHA-256-derived key. Live browser storage is not encrypted by LIFEHUB.
 
 ## Presentation
 
@@ -25,7 +25,7 @@ CSS variables define light and dark palettes. System preference is the initial d
 
 ## PWA and deployment
 
-`vite-plugin-pwa` emits the web manifest and service worker. The worker precaches the built app for offline shell access. `VITE_BASE_PATH` configures a repository subpath; use `/` for a custom domain/root deployment and `/<repository>/` for a project page. GitHub Actions builds and publishes `dist/`.
+`vite-plugin-pwa` emits the web manifest and service worker. The worker precaches the built app for offline shell access. `VITE_BASE_PATH` configures a repository subpath; use `/` for a custom domain/root deployment and `/<repository>/` for a project page. GitHub Actions builds and publishes `dist/`. Google Drive sync uses the browser-only Google Identity Services token model and `drive.file`; WebDAV credentials are held in memory. Sync snapshots are per device and merge by update timestamp with deletion tombstones.
 
 ## Current scope
 

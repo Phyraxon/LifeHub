@@ -5,7 +5,7 @@ export const backupVersion = 1;
 export const tableNames = [
   'settings', 'tasks', 'events', 'householdTasks', 'rooms', 'transactions', 'budgets', 'savingsGoals',
   'shoppingLists', 'shoppingItems', 'documents', 'contracts', 'subscriptions', 'devices', 'notes',
-  'categories', 'tags', 'reminders', 'attachments',
+  'categories', 'tags', 'reminders', 'attachments', 'syncTombstones',
 ] as const;
 export type BackupTableName = typeof tableNames[number];
 
@@ -84,12 +84,12 @@ export async function parseBackup(text: string, password = ''): Promise<ImportPl
   const validated = payloadSchema.safeParse(parsed);
   if (!validated.success) throw new Error('Backup-Version oder Datenstruktur ist ungültig oder wird nicht unterstützt.');
   const source = validated.data.tables;
-  if (tableNames.some(name => !Object.hasOwn(source, name)) || Object.keys(source).some(name => !tableNames.includes(name as BackupTableName))) {
+  if (tableNames.some(name => name !== 'syncTombstones' && !Object.hasOwn(source, name)) || Object.keys(source).some(name => !tableNames.includes(name as BackupTableName))) {
     throw new Error('Das Backup enthält unvollständige oder unbekannte Datenbereiche.');
   }
   const rows = {} as Record<BackupTableName, Record<string, unknown>[]>;
   for (const name of tableNames) {
-    const data = source[name];
+    const data = source[name] ?? [];
     const ids = new Set<string>();
     for (const row of data) {
       if (ids.has(row.id)) throw new Error(`Das Backup enthält doppelte IDs im Bereich „${name}“.`);

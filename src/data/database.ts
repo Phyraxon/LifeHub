@@ -134,6 +134,13 @@ export interface Note extends RecordBase {
   archived: boolean;
 }
 
+export interface SyncTombstone extends RecordBase {
+  id: string;
+  tableName: string;
+  recordId: string;
+  deletedAt: string;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -154,6 +161,7 @@ class LifehubDatabase extends Dexie {
   tags!: EntityTable<RecordBase, 'id'>;
   reminders!: EntityTable<RecordBase, 'id'>;
   attachments!: EntityTable<RecordBase, 'id'>;
+  syncTombstones!: EntityTable<SyncTombstone, 'id'>;
 
   constructor() {
     super('LifehubDatabase');
@@ -175,6 +183,7 @@ class LifehubDatabase extends Dexie {
     this.version(6).stores({ documents: 'id, name, category, issuedAt, expiresAt, createdAt, updatedAt' });
     this.version(7).stores({ contracts: 'id, provider, renewalAt, endsAt, createdAt, updatedAt', devices: 'id, name, purchaseDate, warrantyEndAt, createdAt, updatedAt' });
     this.version(8).stores({ notes: 'id, title, category, favorite, archived, createdAt, updatedAt' });
+    this.version(9).stores({ syncTombstones: 'id, tableName, recordId, deletedAt' });
   }
 }
 

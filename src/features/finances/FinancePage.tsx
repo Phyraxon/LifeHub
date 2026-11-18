@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { ArrowDownLeft, ArrowUpRight, Plus, Trash2, Wallet } from 'lucide-react';
 import { db, type SavingsGoal, type TransactionRecord } from '../../data/database';
 import { parseMoneyToCents, summarizeTransactions } from './money';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 const expenseCategories = ['Lebensmittel', 'Wohnen', 'Versicherungen', 'Mobilität', 'Freizeit', 'Gesundheit', 'Haushalt', 'Sonstiges'];
 const incomeCategories = ['Gehalt', 'Nebeneinkommen', 'Rückerstattung', 'Sonstige Einnahmen'];
@@ -55,7 +56,7 @@ export default function FinancePage() {
     await db.transactions.add({ id: crypto.randomUUID(), title: clean, date, kind, category, amountCents: cents, createdAt: now, updatedAt: now });
     setTitle(''); setAmount(''); setError(''); setShowTransactionForm(false); await refresh();
   };
-  const removeTransaction = async (id: string) => { await db.transactions.delete(id); await refresh(); };
+  const removeTransaction = async (id: string) => { await deleteSyncedRecords([{ table: 'transactions', ids: [id] }]); await refresh(); };
   const saveBudget = async (event: FormEvent) => {
     event.preventDefault(); const cents = parseMoneyToCents(budgetInput);
     if (cents === null) { setError('Bitte gib ein gültiges Budget ein.'); return; }
@@ -76,7 +77,7 @@ export default function FinancePage() {
     await db.savingsGoals.update(goal.id, { savedCents: goal.savedCents + cents, updatedAt: new Date().toISOString() });
     setDepositInputs(current => ({ ...current, [goal.id]: '' })); setError(''); await refresh();
   };
-  const removeGoal = async (id: string) => { await db.savingsGoals.delete(id); await refresh(); };
+  const removeGoal = async (id: string) => { await deleteSyncedRecords([{ table: 'savingsGoals', ids: [id] }]); await refresh(); };
 
   return <section className="finance-page">
     <div className="welcome-line"><div><p className="eyebrow">DEIN GELD. DEIN ÜBERBLICK.</p><h1>Finanzen</h1><p className="subheading">Ein klarer Blick auf das, was reinkommt und rausgeht.</p></div><button className="button primary" onClick={() => setShowTransactionForm(!showTransactionForm)}><Plus size={15}/>Buchung erfassen</button></div>

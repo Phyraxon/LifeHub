@@ -2,7 +2,7 @@
 
 **Your life. One place.** A private, local-first personal life management platform.
 
-> Current status: local-first workflows are available for tasks, calendar, shopping, household, finance, documents, contracts, devices, notes, global search, reminders, and versioned JSON/encrypted backup. LIFEHUB 1.0 still needs release verification and additional compatibility work.
+> Current status: local-first workflows are available for tasks, calendar, shopping, household, finance, documents, contracts, devices, notes, global search, reminders, and versioned JSON/encrypted backup. Optional encrypted device sync is implemented for Google Drive and WebDAV/Nextcloud; Google Drive needs the project's OAuth client ID before it can be enabled on the hosted build.
 
 ## Run locally
 
@@ -28,12 +28,13 @@ Set `VITE_BASE_PATH` to the project path (for example `/<repository>/`) when bui
 
 ## Privacy and storage
 
-The product is designed to run without a backend. Dexie/IndexedDB is configured for settings and future module records. Theme, preferred language, and currency are stored locally; the visible interface is currently German only. The first-run welcome dismissal uses local browser storage. The dashboard contains no sample personal data. Clearing browser storage removes preferences and, once added, local records. Encrypted backup will protect exported backup files, not automatically encrypt the live database.
+LIFEHUB has no central application backend. Records stay in the browser's IndexedDB unless the user explicitly starts sync. Optional sync encrypts data on the device before sending it to the selected provider. See [the sync and provider setup](./SYNC.md) and the in-app [privacy notice](https://phyraxon.github.io/LifeHub/#/datenschutz).
 
 ## Documentation
 
 - [Architecture](./ARCHITECTURE.md)
 - [Roadmap](./ROADMAP.md)
+- [Sync setup](./SYNC.md)
 
 ## License
 

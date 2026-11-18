@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Download, Eye, FileText, Pencil, Plus, Search, Trash2, Upload, X } from 'lucide-react';
 import { db, type DocumentCategory, type StoredDocument } from '../../data/database';
 import { getDocumentFileError } from './fileRules';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 const categories: DocumentCategory[] = ['Rechnungen', 'Versicherungen', 'Verträge', 'Bescheide', 'Garantien', 'Anleitungen', 'Persönliches', 'Sonstiges'];
 const readableSize = (bytes: number) => bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -72,7 +73,7 @@ export default function DocumentsPage() {
     }
   };
 
-  const remove = async (doc: StoredDocument) => { await db.documents.delete(doc.id); if (preview?.id === doc.id) setPreview(null); await refresh(); await updateStorage(); };
+  const remove = async (doc: StoredDocument) => { await deleteSyncedRecords([{ table: 'documents', ids: [doc.id] }]); if (preview?.id === doc.id) setPreview(null); await refresh(); await updateStorage(); };
   const download = (doc: StoredDocument) => { const url = URL.createObjectURL(doc.blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = doc.name; anchor.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000); };
 
   return <section className="documents-page">

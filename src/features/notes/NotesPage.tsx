@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Archive, Heart, Plus, Search, StickyNote, Tag, Trash2 } from 'lucide-react';
 import { db, type Note } from '../../data/database';
 import { useSearchParams } from 'react-router-dom';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 type View = 'all' | 'favorites' | 'archive';
 const noteCategories = ['Persönlich', 'Ideen', 'Familie', 'Arbeit', 'Haushalt', 'Sonstiges'];
@@ -52,7 +53,7 @@ export default function NotesPage() {
     if (current?.id === note.id) setCurrent({ ...note, [field]: next });
     await refresh();
   };
-  const remove = async (note: Note) => { await db.notes.delete(note.id); if (current?.id === note.id) { setCurrent(null); setIsNew(false); } await refresh(); };
+  const remove = async (note: Note) => { await deleteSyncedRecords([{ table: 'notes', ids: [note.id] }]); if (current?.id === note.id) { setCurrent(null); setIsNew(false); } await refresh(); };
 
   return <section className="notes-page">
     <div className="welcome-line"><div><p className="eyebrow">GEDANKEN FESTHALTEN</p><h1>Notizen</h1><p className="subheading">Ein guter Ort für alles, was du behalten möchtest.</p></div><button className="button primary" onClick={startNew}><Plus size={15}/>Neue Notiz</button></div>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Check, ChevronDown, Heart, ListPlus, Plus, ShoppingBasket, Trash2 } from 'lucide-react';
 import { db, type ShoppingCategory, type ShoppingItem, type ShoppingList } from '../../data/database';
 import { calculateShoppingTotals } from './totals';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 const categories: ShoppingCategory[] = ['Lebensmittel', 'Getränke', 'Drogerie', 'Haushalt', 'Technik', 'Kleidung', 'Sonstiges'];
 const units = ['Stück', 'Packung', 'kg', 'g', 'l', 'ml', 'Flasche', 'Dose'];
@@ -48,10 +49,8 @@ export default function ShoppingPage() {
   };
   const deleteList = async () => {
     if (!selectedId) return;
-    await db.transaction('rw', db.shoppingLists, db.shoppingItems, async () => {
-      await db.shoppingItems.where('listId').equals(selectedId).delete();
-      await db.shoppingLists.delete(selectedId);
-    });
+    const itemIds = await db.shoppingItems.where('listId').equals(selectedId).primaryKeys();
+    await deleteSyncedRecords([{ table: 'shoppingItems', ids: itemIds }, { table: 'shoppingLists', ids: [selectedId] }]);
     setSelectedId(null); await refreshLists();
   };
 
@@ -74,7 +73,7 @@ export default function ShoppingPage() {
   const editItem = (item: ShoppingItem) => { setEditingId(item.id); setName(item.name); setQuantity(String(item.quantity)); setUnit(item.unit); setCategory(item.category); setPrice(item.price === null ? '' : String(item.price)); setError(''); };
   const toggleItem = async (item: ShoppingItem) => { await db.shoppingItems.update(item.id, { checkedAt: item.checkedAt ? null : new Date().toISOString(), updatedAt: new Date().toISOString() }); await refreshItems(); };
   const toggleFavorite = async (item: ShoppingItem) => { await db.shoppingItems.update(item.id, { favorite: !item.favorite, updatedAt: new Date().toISOString() }); await refreshItems(); };
-  const removeItem = async (id: string) => { await db.shoppingItems.delete(id); await refreshItems(); };
+  const removeItem = async (id: string) => { await deleteSyncedRecords([{ table: 'shoppingItems', ids: [id] }]); await refreshItems(); };
 
   return <section className="shopping-page">
     <div className="welcome-line"><div><p className="eyebrow">DEIN ALLTAG</p><h1>Einkäufe</h1><p className="subheading">Alles auf deiner Liste. Ganz entspannt.</p></div><button className="button primary" onClick={() => setCreatingList(true)}><ListPlus size={15}/>Neue Liste</button></div>

@@ -3,6 +3,7 @@ import { CalendarClock, FileText, Plus, ShieldCheck, Trash2, Wallet, X } from 'l
 import { db, type Contract, type Device, type StoredDocument } from '../../data/database';
 import { calculateNoticeDate, calculateWarrantyEnd, getMonthlyContractCost, getYearlyContractCost } from './calculations';
 import { parseMoneyToCents } from '../finances/money';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 
 type Tab = 'contracts' | 'devices';
 type Editor = 'contract' | 'device' | null;
@@ -85,8 +86,8 @@ export default function AssetsPage({ initialTab }: { initialTab: Tab }) {
     clear(); await refresh();
   };
 
-  const deleteContract = async (id: string) => { await db.contracts.delete(id); await refresh(); };
-  const deleteDevice = async (id: string) => { await db.devices.delete(id); await refresh(); };
+  const deleteContract = async (id: string) => { await deleteSyncedRecords([{ table: 'contracts', ids: [id] }]); await refresh(); };
+  const deleteDevice = async (id: string) => { await deleteSyncedRecords([{ table: 'devices', ids: [id] }]); await refresh(); };
   const linkedDoc = (id: string | null) => id ? documents.find(doc => doc.id === id)?.name ?? 'Dokument nicht gefunden' : null;
 
   return <section className="assets-page">

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Check, ChevronDown, Circle, Plus, Search, Trash2 } from 'lucide-react';
 import { db, type Task } from '../../data/database';
 import { useSearchParams } from 'react-router-dom';
+import { deleteSyncedRecords } from '../sync/localDeletes';
 import { filterTasks, getTaskCounts, type TaskFilter } from './taskFilters';
 
 export default function TasksPage() {
@@ -43,7 +44,7 @@ export default function TasksPage() {
     await refresh();
   };
   const edit = (task: Task) => { setEditing(task.id); setTitle(task.title); setDueAt(task.dueAt ?? ''); setPriority(task.priority); setAdding(true); };
-  const remove = async (task: Task) => { await db.tasks.delete(task.id); await refresh(); };
+  const remove = async (task: Task) => { await deleteSyncedRecords([{ table: 'tasks', ids: [task.id] }]); await refresh(); };
   const filters: { id: TaskFilter; label: string }[] = [
     { id: 'all', label: 'Alle offen' }, { id: 'today', label: 'Heute' }, { id: 'week', label: 'Diese Woche' }, { id: 'overdue', label: 'Überfällig' }, { id: 'done', label: 'Erledigt' },
   ];
