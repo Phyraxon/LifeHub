@@ -85,6 +85,20 @@ export interface SavingsGoal extends RecordBase {
   dueAt: string | null;
 }
 
+export type DocumentCategory = 'Rechnungen' | 'Versicherungen' | 'Verträge' | 'Bescheide' | 'Garantien' | 'Anleitungen' | 'Persönliches' | 'Sonstiges';
+
+export interface StoredDocument extends RecordBase {
+  name: string;
+  mimeType: string;
+  size: number;
+  category: DocumentCategory;
+  description: string;
+  tags: string[];
+  issuedAt: string | null;
+  expiresAt: string | null;
+  blob: Blob;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -96,7 +110,7 @@ class LifehubDatabase extends Dexie {
   savingsGoals!: EntityTable<SavingsGoal, 'id'>;
   shoppingLists!: EntityTable<ShoppingList, 'id'>;
   shoppingItems!: EntityTable<ShoppingItem, 'id'>;
-  documents!: EntityTable<RecordBase, 'id'>;
+  documents!: EntityTable<StoredDocument, 'id'>;
   contracts!: EntityTable<RecordBase, 'id'>;
   subscriptions!: EntityTable<RecordBase, 'id'>;
   devices!: EntityTable<RecordBase, 'id'>;
@@ -123,6 +137,7 @@ class LifehubDatabase extends Dexie {
     this.version(3).stores({ shoppingLists: 'id, name, createdAt, updatedAt', shoppingItems: 'id, listId, checkedAt, category, createdAt, updatedAt' });
     this.version(4).stores({ householdTasks: 'id, roomId, dueAt, completedAt, recurrence, createdAt, updatedAt', rooms: 'id, name, createdAt, updatedAt' });
     this.version(5).stores({ transactions: 'id, date, kind, category, createdAt, updatedAt', budgets: 'id, month, createdAt, updatedAt', savingsGoals: 'id, title, dueAt, createdAt, updatedAt' });
+    this.version(6).stores({ documents: 'id, name, category, issuedAt, expiresAt, createdAt, updatedAt' });
   }
 }
 

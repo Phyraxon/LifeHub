@@ -52,6 +52,12 @@ Deliver finance, documents/contracts/devices, then notes, unified search, and re
 - [x] Savings goals with contributions
 - [ ] Recurring transactions, dedicated budget categories, month comparison, and chart coverage
 
+### Phase 7 — Documents, contracts, and devices (in progress)
+
+- [x] Local document upload, metadata, category/tag search, preview, download, and delete
+- [x] 20 MB file limit, accepted-format checks, and browser quota check before writes
+- [ ] Contracts/subscriptions, devices/warranty records, document links, and storage cleanup tooling
+
 ## Phase 9 — Backup
 
 Implement validated versioned JSON export/import, duplicate reporting, safe restore, encrypted backup via AES-GCM/PBKDF2, and storage usage reporting.
@@ -62,4 +68,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, and basic finance slices. LIFEHUB 1.0 is not complete: recurring finance, document/contract/device, notes/search/reminders, backup, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, and document slices. LIFEHUB 1.0 is not complete: recurring finance, contracts/devices, notes/search/reminders, backup, and release verification remain on the roadmap.
