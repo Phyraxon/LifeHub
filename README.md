@@ -2,7 +2,7 @@
 
 **Your life. One place.** A private, local-first personal life management platform.
 
-> Current status: early foundation. The responsive shell, local task/calendar/shopping/household/finance/document/contract/device workflows, notes, and global search are present; reminders and backup flows are not yet implemented.
+> Current status: early foundation. Local task/calendar/shopping/household/finance/document/contract/device workflows, notes, search, and initial JSON/encrypted backup flows are present; reminders and extended backup compatibility remain in progress.
 
 ## Run locally
 

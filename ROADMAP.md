@@ -67,9 +67,14 @@ Deliver finance, documents/contracts/devices, then notes, unified search, and re
 - [x] Search history stored locally; document blobs scanned without retaining the full file list in memory
 - [ ] Checklists, cross-module links, reminder generation, browser notification settings, and reminder tests
 
-## Phase 9 — Backup
+## Phase 9 — Backup (in progress)
 
-Implement validated versioned JSON export/import, duplicate reporting, safe restore, encrypted backup via AES-GCM/PBKDF2, and storage usage reporting.
+- [x] Versioned JSON export and Zod-validated import
+- [x] AES-GCM encrypted export with PBKDF2-SHA-256, random salt/IV, and 600,000 iterations
+- [x] Duplicate preview and transactional restore that skips existing IDs without overwriting
+- [x] Document blob export/import and size verification
+- [x] Browser storage estimate and explicit full local-data deletion
+- [ ] Cross-version migrations, larger backup streaming, and browser-level recovery tests
 
 ## Phase 10 — Release quality
 
@@ -77,4 +82,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, device, notes, and global-search slices. LIFEHUB 1.0 is not complete: reminders, backup, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, household, finance, document, contract, device, notes, global-search, and initial backup slices. LIFEHUB 1.0 is not complete: reminders, additional backup version support, and release verification remain on the roadmap.

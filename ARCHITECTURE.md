@@ -17,7 +17,7 @@ The initial shell is in `src/App.tsx`; feature routes live under `src/features`.
 
 ## Storage and privacy
 
-Dexie/IndexedDB is the durable store. Settings and transient UI preferences may use localStorage. Document blobs are stored with metadata in IndexedDB and checked against a 20 MB limit and available browser quota before writes. JSON backup import must validate format/version, detect IDs already present, and commit changes transactionally. Encrypted exports use Web Crypto AES-GCM with a PBKDF2-derived key; this protects the export file only, not the live browser database.
+Dexie/IndexedDB is the durable store. Settings and transient UI preferences may use localStorage. Document blobs are stored with metadata in IndexedDB and checked against a 20 MB limit and available browser quota before writes. Backup import validates format/version with Zod, detects IDs already present, and commits new rows transactionally without overwriting. Encrypted exports use Web Crypto AES-GCM with a PBKDF2-SHA-256-derived key; this protects the export file only, not the live browser database.
 
 ## Presentation
 
