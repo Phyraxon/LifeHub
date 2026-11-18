@@ -13,7 +13,7 @@ LIFEHUB is a client-only React application. Vite builds static assets for GitHub
 - `src/data`: Dexie database, repositories, and migrations.
 - `src/shared`: domain types, validation schemas, localization, and utilities.
 
-The initial shell is in `src/App.tsx`; feature routes live under `src/features`. Current task, calendar, and shopping slices use Dexie tables from route components; move persistence into application services/repositories before adding cross-module behavior. Repositories should own persistence; services should own validation and cross-module behavior. Use UUIDs and ISO timestamps for persisted records. Destructive operations involving relations must be explicit and transactional.
+The initial shell is in `src/App.tsx`; feature routes live under `src/features`. Current task, calendar, shopping, and household slices use Dexie tables from route components; move persistence into application services/repositories before adding cross-module behavior. Repositories should own persistence; services should own validation and cross-module behavior. Use UUIDs and ISO timestamps for persisted records. Destructive operations involving relations must be explicit and transactional.
 
 ## Storage and privacy
 

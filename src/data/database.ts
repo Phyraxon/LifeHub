@@ -49,12 +49,28 @@ export interface ShoppingItem extends RecordBase {
   favorite: boolean;
 }
 
+export interface Room extends RecordBase {
+  name: string;
+}
+
+export type HouseholdRecurrence = 'none' | 'daily' | 'weekly' | 'monthly';
+
+export interface HouseholdTask extends RecordBase {
+  title: string;
+  roomId: string | null;
+  dueAt: string | null;
+  recurrence: HouseholdRecurrence;
+  completedAt: string | null;
+  lastCompletedAt: string | null;
+  notes: string;
+}
+
 class LifehubDatabase extends Dexie {
   settings!: EntityTable<AppSettings, 'key'>;
   tasks!: EntityTable<Task, 'id'>;
   events!: EntityTable<CalendarEvent, 'id'>;
-  householdTasks!: EntityTable<RecordBase, 'id'>;
-  rooms!: EntityTable<RecordBase, 'id'>;
+  householdTasks!: EntityTable<HouseholdTask, 'id'>;
+  rooms!: EntityTable<Room, 'id'>;
   transactions!: EntityTable<RecordBase, 'id'>;
   budgets!: EntityTable<RecordBase, 'id'>;
   savingsGoals!: EntityTable<RecordBase, 'id'>;
@@ -85,6 +101,7 @@ class LifehubDatabase extends Dexie {
     });
     this.version(2).stores({ events: 'id, startAt, createdAt, updatedAt' });
     this.version(3).stores({ shoppingLists: 'id, name, createdAt, updatedAt', shoppingItems: 'id, listId, checkedAt, category, createdAt, updatedAt' });
+    this.version(4).stores({ householdTasks: 'id, roomId, dueAt, completedAt, recurrence, createdAt, updatedAt', rooms: 'id, name, createdAt, updatedAt' });
   }
 }
 

@@ -36,7 +36,9 @@ The first Dexie schema now defines settings and the requested module stores. Nex
 - [x] Multiple shopping lists persisted locally
 - [x] Products with quantity, unit, category, price, completion, and favorite state
 - [x] Accurate line-rounded totals and remaining open subtotal
-- [ ] Household rooms, recurring chores, maintenance reminders, and shopping history/favorites view
+- [x] Household rooms and chores with due dates, notes, one-time/daily/weekly/monthly recurrence
+- [x] Completing recurring chores advances their next due date, including month-end handling
+- [ ] Household maintenance reminders and shopping history/favorites view
 
 ## Phases 6–8 — Daily life modules
 
@@ -52,4 +54,4 @@ Add focused unit/integration and Playwright coverage, verify responsive behavior
 
 ## Current release status
 
-This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, and shopping slices. LIFEHUB 1.0 is not complete: household, finance, document/contract/device, notes/search/reminders, backup, and release verification remain on the roadmap.
+This workspace contains the Phase 1 foundation, initial settings/database work, and functional task, calendar, shopping, and household slices. LIFEHUB 1.0 is not complete: finance, document/contract/device, notes/search/reminders, backup, and release verification remain on the roadmap.
